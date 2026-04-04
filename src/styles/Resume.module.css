@@ -1,0 +1,238 @@
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.downloadBtn {
+  display: inline-block;
+  padding: 8px 18px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.downloadBtn:hover {
+  background: var(--accent-hover);
+  color: #fff;
+}
+
+.resume {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 48px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.contact {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+
+.contact a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.contact a:hover {
+  color: var(--accent);
+}
+
+.roleTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+
+.summary {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* Bullets */
+.bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bullets li {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  padding-left: 16px;
+  position: relative;
+}
+
+.bullets li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 0.7rem;
+  top: 3px;
+}
+
+/* Job */
+.job {
+  margin-bottom: 28px;
+}
+
+.job:last-child {
+  margin-bottom: 0;
+}
+
+.jobHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.jobTitle {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+.jobSep {
+  color: var(--text-muted);
+}
+
+.jobCompany {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.jobLocation {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.jobDates {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* Education */
+.eduGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.eduItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eduDegree {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.eduSchool {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Print */
+@media print {
+  .actions { display: none; }
+  .resume {
+    background: white;
+    border: none;
+    padding: 0;
+    color: black;
+  }
+}
+
+@media (max-width: 600px) {
+  .resume {
+    padding: 24px 20px;
+  }
+
+  .jobHeader {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
