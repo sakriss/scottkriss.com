@@ -1,49 +1,253 @@
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
+/* ── Hero ────────────────────────────────────────────── */
+.hero {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 24px 24px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
-.title {
-  font-size: 1.8rem;
+.heroLocation {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.heroTemp {
+  font-size: 6rem;
+  font-weight: 200;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 8px;
+}
+
+.heroConditions {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.heroMeta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.heroFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* ── Section ─────────────────────────────────────────── */
+.section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.sectionLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 18px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Hourly ──────────────────────────────────────────── */
+.hourlyScroll {
+  display: flex;
+  overflow-x: auto;
+  padding: 14px 16px;
+  gap: 4px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hourlyScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.hourlyItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-width: 56px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.hourlyItem:hover {
+  background: var(--bg-elevated, rgba(255,255,255,0.04));
+}
+
+.hourlyTime {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.hourlyIcon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.hourlyPrecip {
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-top: -4px;
+}
+
+.hourlyTemp {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Daily ───────────────────────────────────────────── */
+.dailyList {
+  padding: 4px 0;
+}
+
+.dailyRow {
+  display: flex;
+  align-items: center;
+  padding: 11px 18px;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dailyRow:last-child {
+  border-bottom: none;
+}
+
+.dailyDay {
+  width: 46px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.dailyIcon {
+  font-size: 1.25rem;
+  width: 30px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dailyPrecip {
+  font-size: 0.72rem;
+  color: var(--accent);
+  width: 30px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dailyRange {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.dailyLow {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.dailyHigh {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 28px;
+  flex-shrink: 0;
+}
+
+.dailyBar {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+
+.dailyBarFill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #4a9eff 0%, #f0a500 100%);
+}
+
+/* ── Detail Grid ─────────────────────────────────────── */
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 1px;
+  background: var(--border);
+}
+
+.detailCard {
+  background: var(--bg-surface);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.detailValue {
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-.subtitle {
-  font-size: 0.9rem;
+.detailSub {
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-.headerRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
+/* ── Shared ──────────────────────────────────────────── */
 .updated {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
-}
-
-.obsTime {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 28px;
 }
 
 .refreshBtn {
-  padding: 8px 18px;
+  padding: 7px 16px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
   font-family: var(--font);
@@ -55,58 +259,7 @@
   color: var(--accent);
 }
 
-/* Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-  margin-bottom: 32px;
-}
-
-.card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.cardTop {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.cardIcon {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.cardLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-
-.cardValue {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-
-.cardSub {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-/* Loading */
+/* ── Loading ─────────────────────────────────────────── */
 .loading {
   display: flex;
   flex-direction: column;
@@ -129,7 +282,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Error */
+/* ── Error ───────────────────────────────────────────── */
 .errorBox {
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -154,11 +307,12 @@
   font-family: monospace;
 }
 
-/* Attribution */
+/* ── Attribution ─────────────────────────────────────── */
 .attribution {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   text-align: center;
+  margin-top: 4px;
 }
 
 .attribution a {
@@ -170,12 +324,22 @@
   color: var(--accent);
 }
 
+/* ── Mobile ──────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .grid {
+  .heroTemp {
+    font-size: 5rem;
+  }
+
+  .detailGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .cardValue {
-    font-size: 1.3rem;
+  .detailValue {
+    font-size: 1.15rem;
+  }
+
+  .dailyRow {
+    padding: 10px 14px;
+    gap: 10px;
   }
 }
