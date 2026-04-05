@@ -1,24 +1,13 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import styles from '../styles/Weather.module.css'
 
 const STATION_ID = 99507
 const TOKEN = import.meta.env.VITE_TEMPEST_TOKEN
 
-function toF(c) {
-  return (c * 9) / 5 + 32
-}
-
-function mpsToMph(mps) {
-  return mps * 2.237
-}
-
-function mbToInHg(mb) {
-  return mb * 0.02953
-}
-
-function mmToIn(mm) {
-  return mm * 0.03937
-}
+function toF(c) { return (c * 9) / 5 + 32 }
+function mpsToMph(mps) { return mps * 2.237 }
+function mbToInHg(mb) { return mb * 0.02953 }
+function mmToIn(mm) { return mm * 0.03937 }
 
 function degreesToCardinal(deg) {
   const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW']
@@ -28,22 +17,16 @@ function degreesToCardinal(deg) {
 function feelsLike(tempF, humidity, windMph) {
   if (tempF >= 80) {
     return (
-      -42.379 +
-      2.04901523 * tempF +
-      10.14333127 * humidity -
-      0.22475541 * tempF * humidity -
-      0.00683783 * tempF * tempF -
-      0.05481717 * humidity * humidity +
-      0.00122874 * tempF * tempF * humidity +
+      -42.379 + 2.04901523 * tempF + 10.14333127 * humidity -
+      0.22475541 * tempF * humidity - 0.00683783 * tempF * tempF -
+      0.05481717 * humidity * humidity + 0.00122874 * tempF * tempF * humidity +
       0.00085282 * tempF * humidity * humidity -
       0.00000199 * tempF * tempF * humidity * humidity
     )
   }
   if (tempF <= 50 && windMph > 3) {
     return (
-      35.74 +
-      0.6215 * tempF -
-      35.75 * Math.pow(windMph, 0.16) +
+      35.74 + 0.6215 * tempF - 35.75 * Math.pow(windMph, 0.16) +
       0.4275 * tempF * Math.pow(windMph, 0.16)
     )
   }
@@ -62,28 +45,26 @@ function formatDay(epoch) {
   return new Date(epoch * 1000).toLocaleDateString([], { weekday: 'short' })
 }
 
+function formatFullDay(epoch) {
+  return new Date(epoch * 1000).toLocaleDateString([], {
+    weekday: 'long', month: 'long', day: 'numeric',
+  })
+}
+
+function formatTime12(epoch) {
+  if (!epoch) return '—'
+  return new Date(epoch * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+}
+
 function weatherIcon(icon) {
   const map = {
-    'clear-day': '☀️',
-    'clear-night': '🌙',
-    'cloudy': '☁️',
-    'partly-cloudy-day': '⛅',
-    'partly-cloudy-night': '🌥',
-    'possibly-rainy-day': '🌦',
-    'possibly-rainy-night': '🌦',
-    'rainy': '🌧',
-    'rain': '🌧',
-    'possibly-snow-day': '🌨',
-    'possibly-snow-night': '🌨',
-    'snow': '❄️',
-    'snowy': '❄️',
-    'sleet': '🌨',
-    'thunderstorm': '⛈',
-    'possibly-thunderstorm-day': '⛈',
-    'possibly-thunderstorm-night': '⛈',
-    'fog': '🌫',
-    'windy': '💨',
-    'tornado': '🌪',
+    'clear-day': '☀️', 'clear-night': '🌙', 'cloudy': '☁️',
+    'partly-cloudy-day': '⛅', 'partly-cloudy-night': '🌥',
+    'possibly-rainy-day': '🌦', 'possibly-rainy-night': '🌦',
+    'rainy': '🌧', 'rain': '🌧', 'possibly-snow-day': '🌨',
+    'possibly-snow-night': '🌨', 'snow': '❄️', 'snowy': '❄️',
+    'sleet': '🌨', 'thunderstorm': '⛈', 'possibly-thunderstorm-day': '⛈',
+    'possibly-thunderstorm-night': '⛈', 'fog': '🌫', 'windy': '💨', 'tornado': '🌪',
   }
   return map[icon] || '🌡'
 }
@@ -105,6 +86,151 @@ function pressureTrend(trend) {
   return '→ Steady'
 }
 
+// ── Day Detail View ───────────────────────────────────────────────────────────
+
+function DayDetail({ daily, allHourly, selectedDay, onSelectDay, onBack }) {
+  const weekNavRef = useRef(null)
+  const day = daily[selectedDay]
+
+  // Filter hourly entries that fall within this day
+  const dayStart = day.day_start_local
+  const dayEnd = dayStart + 86400
+  const dayHours = allHourly.filter(h => h.time >= dayStart && h.time < dayEnd)
+
+  // Scroll selected tab into view when day changes
+  useEffect(() => {
+    if (!weekNavRef.current) return
+    const active = weekNavRef.current.querySelector(`.${styles.weekTabActive}`)
+    if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }, [selectedDay])
+
+  const isToday = selectedDay === 0
+
+  // Night icon is roughly "clear-night" or night variant of icon
+  const nightIcon = day.icon?.includes('day')
+    ? day.icon.replace('day', 'night')
+    : 'clear-night'
+
+  return (
+    <div className={styles.detailScreen}>
+
+      {/* Header */}
+      <div className={styles.detailHeader}>
+        <button className={styles.backBtn} onClick={onBack}>
+          ‹ Back
+        </button>
+        <span className={styles.detailTitle}>7-Day Forecast</span>
+        <span className={styles.detailHeaderSpacer} />
+      </div>
+
+      {/* Week nav */}
+      <div className={styles.weekNav} ref={weekNavRef}>
+        {daily.map((d, i) => (
+          <button
+            key={d.day_start_local}
+            className={`${styles.weekTab} ${i === selectedDay ? styles.weekTabActive : ''}`}
+            onClick={() => onSelectDay(i)}
+          >
+            <span className={styles.weekTabIcon}>{weatherIcon(d.icon)}</span>
+            <span className={styles.weekTabDay}>{i === 0 ? 'Today' : formatDay(d.day_start_local)}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Day label */}
+      <div className={styles.detailDayLabel}>
+        {isToday ? 'Today' : formatDay(day.day_start_local)} — {formatFullDay(day.day_start_local)}
+      </div>
+
+      {/* Day / Night summary */}
+      <div className={styles.section}>
+        <div className={styles.summaryCard}>
+          <span className={styles.summaryIcon}>{weatherIcon(day.icon)}</span>
+          <div>
+            <div className={styles.summaryTitle}>{isToday ? 'Today' : formatDay(day.day_start_local)}</div>
+            <div className={styles.summarySub}>{day.conditions || '—'}</div>
+          </div>
+        </div>
+        <div className={styles.sectionDivider} />
+        <div className={styles.summaryCard}>
+          <span className={styles.summaryIcon}>{weatherIcon(nightIcon)}</span>
+          <div>
+            <div className={styles.summaryTitle}>
+              {isToday ? 'Tonight' : `${formatDay(day.day_start_local)} Night`}
+            </div>
+            <div className={styles.summarySub}>{day.conditions || '—'}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hourly strip */}
+      {dayHours.length > 0 && (
+        <div className={styles.section}>
+          <div className={styles.hourlyScroll}>
+            {dayHours.map(h => (
+              <div key={h.time} className={styles.hourlyItem}>
+                <div className={styles.hourlyTime}>{formatHour(h.time)}</div>
+                <div className={styles.hourlyIcon}>{weatherIcon(h.icon)}</div>
+                {h.precip_probability > 10 && (
+                  <div className={styles.hourlyPrecip}>{h.precip_probability}%</div>
+                )}
+                <div className={styles.hourlyTemp}>{Math.round(h.air_temperature)}°</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Details */}
+      <div className={styles.section}>
+        <div className={styles.detailPairs}>
+          <div className={`${styles.detailPairCell} ${day.feels_like_low == null ? styles.detailPairFull : ''}`}>
+            <div className={styles.detailPairLabel}>🌡 Temperature</div>
+            <div className={styles.detailPairValue}>
+              {Math.round(day.air_temp_low)}–{Math.round(day.air_temp_high)}°
+            </div>
+          </div>
+          {day.feels_like_low != null && day.feels_like_high != null && (
+            <div className={styles.detailPairCell}>
+              <div className={styles.detailPairLabel}>🤔 Feels Like</div>
+              <div className={styles.detailPairValue}>
+                {Math.round(day.feels_like_low)}–{Math.round(day.feels_like_high)}°
+              </div>
+            </div>
+          )}
+          <div className={styles.sectionDivider} />
+          <div className={styles.detailPairCell}>
+            <div className={styles.detailPairLabel}>☂ Precip Chance</div>
+            <div className={styles.detailPairValue}>{day.precip_probability ?? 0}%</div>
+          </div>
+          <div className={styles.detailPairCell}>
+            <div className={styles.detailPairLabel}>💧 Precip Amount</div>
+            <div className={styles.detailPairValue}>
+              {day.precip_accum != null ? `${Number(day.precip_accum).toFixed(2)} in` : '0.00 in'}
+            </div>
+          </div>
+          {(day.sunrise || day.sunset) && (
+            <>
+              <div className={styles.sectionDivider} />
+              <div className={styles.detailPairCell}>
+                <div className={styles.detailPairLabel}>🌅 Sunrise</div>
+                <div className={styles.detailPairValue}>{formatTime12(day.sunrise)}</div>
+              </div>
+              <div className={styles.detailPairCell}>
+                <div className={styles.detailPairLabel}>🌇 Sunset</div>
+                <div className={styles.detailPairValue}>{formatTime12(day.sunset)}</div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+
 export default function Weather() {
   const [obs, setObs] = useState(null)
   const [forecast, setForecast] = useState(null)
@@ -112,6 +238,7 @@ export default function Weather() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
+  const [selectedDay, setSelectedDay] = useState(null)
 
   const fetchData = useCallback(async () => {
     if (!TOKEN) {
@@ -119,30 +246,23 @@ export default function Weather() {
       setLoading(false)
       return
     }
-
     try {
       setLoading(true)
       setError(null)
-
       const [obsRes, fcRes] = await Promise.all([
         fetch(`https://swd.weatherflow.com/swd/rest/observations/station/${STATION_ID}?token=${TOKEN}`),
         fetch(`https://swd.weatherflow.com/swd/rest/better_forecast?station_id=${STATION_ID}&token=${TOKEN}&units_temp=f&units_wind=mph&units_precip=in&units_pressure=inhg`),
       ])
-
       if (!obsRes.ok) throw new Error(`Observations API error: ${obsRes.status}`)
-
       const obsJson = await obsRes.json()
       const obsData = obsJson.obs?.[0]
       if (!obsData) throw new Error('No observation data returned')
-
       setObs(obsData)
       setStationName(obsJson.public_name || `Station ${STATION_ID}`)
-
       if (fcRes.ok) {
         const fcJson = await fcRes.json()
         setForecast(fcJson.forecast)
       }
-
       setLastUpdated(new Date())
     } catch (err) {
       setError(err.message)
@@ -155,28 +275,24 @@ export default function Weather() {
 
   if (loading) {
     return (
-      <div className="page">
-        <div className="container">
-          <div className={styles.loading}>
-            <div className={styles.spinner} />
-            <p>Fetching weather data…</p>
-          </div>
+      <div className="page"><div className="container">
+        <div className={styles.loading}>
+          <div className={styles.spinner} />
+          <p>Fetching weather data…</p>
         </div>
-      </div>
+      </div></div>
     )
   }
 
   if (error) {
     return (
-      <div className="page">
-        <div className="container">
-          <div className={styles.errorBox}>
-            <h2>Could not load weather data</h2>
-            <p>{error}</p>
-            <button onClick={fetchData} className={styles.refreshBtn}>Retry</button>
-          </div>
+      <div className="page"><div className="container">
+        <div className={styles.errorBox}>
+          <h2>Could not load weather data</h2>
+          <p>{error}</p>
+          <button onClick={fetchData} className={styles.refreshBtn}>Retry</button>
         </div>
-      </div>
+      </div></div>
     )
   }
 
@@ -191,6 +307,7 @@ export default function Weather() {
   const currentConditions = forecast?.hourly?.[0]?.conditions || ''
   const currentIcon = forecast?.hourly?.[0]?.icon || 'clear-day'
   const hourly = forecast?.hourly?.slice(0, 24) || []
+  const allHourly = forecast?.hourly || []
   const daily = forecast?.daily?.slice(0, 7) || []
 
   const allLows = daily.map(d => d.air_temp_low).filter(v => v != null)
@@ -198,6 +315,23 @@ export default function Weather() {
   const minTemp = allLows.length ? Math.min(...allLows) : 0
   const maxTemp = allHighs.length ? Math.max(...allHighs) : 100
   const tempRange = maxTemp - minTemp || 1
+
+  // Show day detail screen
+  if (selectedDay !== null && daily.length > 0) {
+    return (
+      <div className="page">
+        <div className="container">
+          <DayDetail
+            daily={daily}
+            allHourly={allHourly}
+            selectedDay={selectedDay}
+            onSelectDay={setSelectedDay}
+            onBack={() => setSelectedDay(null)}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="page">
@@ -257,7 +391,11 @@ export default function Weather() {
                 const lowPct = ((d.air_temp_low - minTemp) / tempRange) * 100
                 const highPct = ((d.air_temp_high - minTemp) / tempRange) * 100
                 return (
-                  <div key={d.day_start_local} className={styles.dailyRow}>
+                  <button
+                    key={d.day_start_local}
+                    className={styles.dailyRow}
+                    onClick={() => setSelectedDay(i)}
+                  >
                     <div className={styles.dailyDay}>{i === 0 ? 'Today' : formatDay(d.day_start_local)}</div>
                     <div className={styles.dailyIcon}>{weatherIcon(d.icon)}</div>
                     <div className={styles.dailyPrecip}>
@@ -273,7 +411,8 @@ export default function Weather() {
                       </div>
                       <span className={styles.dailyHigh}>{Math.round(d.air_temp_high)}°</span>
                     </div>
-                  </div>
+                    <span className={styles.dailyChevron}>›</span>
+                  </button>
                 )
               })}
             </div>

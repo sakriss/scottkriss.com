@@ -75,14 +75,7 @@ export default function Cloudship() {
             precipitation alerts to keep you informed without the noise.
           </p>
           <div className={styles.heroActions}>
-            <a
-              href="https://github.com/scottkriss/cloudship"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.btnSecondary}
-            >
-              GitHub Repo
-            </a>
+            
             <span className={styles.appStoreBadge}>App Store — Coming Soon</span>
           </div>
         </section>
